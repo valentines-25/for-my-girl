@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You ❤️</title>
+    <!-- Importing a vintage typewriter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS STYLES --- */
+        
+        :root {
+            --primary-color: #8B4513; /* Saddle Brown for old school look */
+            --bg-color: #fdfbf7;      /* Old paper / off-white color */
+            --card-bg: #fdfbf7;
+            --ink-color: #2c2c2c;     /* Dark grey ink, not pure black */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Special Elite', cursive; /* The Typewriter Font */
+            background-color: var(--bg-color);
+            color: var(--ink-color);
+            line-height: 1.8;
+            overflow-x: hidden;
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px); /* Subtle texture */
+            background-size: 20px 20px;
+            padding-bottom: 80px; /* Space for music player */
+        }
+
+        /* Container */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        /* --- LOCK SCREEN --- */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #3e2723; /* Dark vintage brown */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 1s ease;
+        }
+
+        #lock-screen h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #fdfbf7;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 2px solid #fdfbf7;
+            padding: 15px;
+        }
+
+        .envelope-btn {
+            background: transparent;
+            color: #fdfbf7;
+            border: 2px solid #fdfbf7;
+            padding: 12px 35px;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .envelope-btn:hover {
+            background: #fdfbf7;
+            color: #3e2723;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .content {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        /* --- SCROLL ANIMATIONS --- */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            will-change: opacity, visibility;
+        }
+
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* --- HERO --- */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero .date {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* --- LETTER SECTION --- */
+        .letter-section {
+            padding: 40px 30px;
+            text-align: left;
+        }
+
+        .letter-text {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            white-space: pre-line;
+        }
+
+        .signature {
+            text-align: right;
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        /* --- TIMELINE (THE SCRAPBOOK) --- */
+        .timeline {
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* The vertical line (Thread) */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            border-left: 2px dashed #aaa; /* Dashed line like thread */
+            transform: translateX(-50%);
+        }
+
+        .memory-card {
+            background: white;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 40px;
+            position: relative;
+            width: 85%;
+            margin-left: 15%; 
+            text-align: left;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+            transform: rotate(-1deg) translateY(30px); /* Initial state for transition */
+            opacity: 0;
+            transition: transform 0.8s ease-out, opacity 0.8s ease-out, filter 0.3s;
+        }
+        
+        .memory-card.visible {
+            opacity: 1;
+            transform: rotate(-1deg) translateY(0);
+        }
+
+        /* Tilt alternate cards the other way */
+        .memory-card:nth-child(even) {
+            margin-left: 0;
+            margin-right: 15%;
+            text-align: right;
+            transform: rotate(1deg) translateY(30px);
+        }
+
+        .memory-card:nth-child(even).visible {
+            transform: rotate(1deg) translateY(0);
+        }
+        
+        /* Tape effect */
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Pin on the timeline */
+        .memory-card::after {
+            content: '';
+            position: absolute;
+            left: -34px; 
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .memory-card:nth-child(even)::after {
+            left: auto;
+            right: -34px;
+        }
+
+        .memory-img {
+            width: 100%;
+            height: auto;
+            border: 4px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            filter: sepia(30%) contrast(1.1); /* Vintage filter */
+            transition: filter 0.3s;
+        }
+
+        .memory-card:hover .memory-img {
+            filter: sepia(0%) contrast(1); /* Returns to color on hover */
+        }
+
+        .memory-date {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .memory-caption {
+            font-size: 0.95rem;
+            color: #555;
+            font-style: italic;
+        }
+
+        /* --- THE CLOSING --- */
+        .ask-section {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #f4e1d2; /* Retro pinkish/brown */
+            border-top: 4px double var(--primary-color);
+        }
+
+        .ask-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .btn-yes {
+            background: var(--primary-color);
+            color: white;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #5d2e0b;
+            transition: transform 0.1s;
+        }
+
+        .btn-yes:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #5d2e0b;
+        }
+
+        /* --- SUCCESS MODAL --- */
+        #confetti-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fdfbf7;
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #confetti-modal h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        /* --- MUSIC PLAYER --- */
+        #music-player {
+            display: none; /* Hidden initially */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #3e2723;
+            color: white;
+            padding: 10px 20px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            font-family: 'Special Elite', cursive;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        #music-player.active {
+            opacity: 1;
+        }
+
+        .music-controls button {
+            background: transparent;
+            border: 1px solid #fdfbf7;
+            color: #fdfbf7;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            border-radius: 4px;
+        }
+        
+        .music-controls button:hover {
+            background: #fdfbf7;
+            color: #3e2723;
+        }
+
+        .music-text {
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- AUDIO ELEMENT -->
+    <!-- Replace 'song.mp3' with your actual file name -->
+    <audio id="bg-music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- MUSIC PLAYER BAR -->
+    <div id="music-player">
+        <div class="music-text">🎵 Peak Song🎵</div>
+        <div class="music-controls">
+            <button id="play-btn">Play</button>
+            <button id="pause-btn">Pause</button>
+        </div>
+    </div>
+
+    <!-- LOCK SCREEN -->
+    <div id="lock-screen">
+        <h1>VAA DIII LOOOOO</h1>
+        <p style="margin-bottom: 30px; color: #ccc;">A letter for you...</p>
+        <button class="envelope-btn" id="openBtn">Open Pannu</button>
+    </div>
+
+    <div class="container">
+        
+        <!-- MAIN CONTENT -->
+        <div class="content" id="main-content">
+            
+            <!-- HERO -->
+            <section class="hero fade-in-section">
+                <h2>Our Story So Far...</h2>
+                <p class="date">Valentine's Day, 2026</p>
+            </section>
+
+            <!-- LETTER TEXT -->
+            <section class="letter-section fade-in-section">
+                <p class="letter-text">
+                    Dear Madam ji,
+                    <br><br>
+                    Unaku gifts vaangi thandhuten (the perfume, the jewelry...), but adhellam naan enna solanumo express pananadhuuuu 
+                    <br><br>
+                    I know We haven't put a label on "us" yet. And I realized recently that we don't really need to. The way we laugh, the way we fight, the way we just exist together... we already act exactly how a real couple should.
+                    <br><br>
+                    So namma enna nu define panrathuku badhila, I just wanted to document this. To remind you that even without the title, you are my person.
+                    <br><br>
+                    Here are some of my favorite moments with you btw press play on the song before seeing the pics 🤣
+                </p>
+                <p class="signature">- Me</p>
+            </section>
+
+            <!-- TIMELINE (9 SLOTS) -->
+            <section class="timeline">
+                
+                <!-- SLOT 1 -->
+                <div class="memory-card">
+                    <span class="memory-date">First Photo Together</span>
+                    <img src="first_meet.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">I was so nervous and excited that day on diwali celebration and I really really wanted to take a picture together, kadaisi ha i ended up mustering up the courage to ask you for a selfie</p>
+                </div>
+
+                <!-- SLOT 2 -->
+                <div class="memory-card">
+                    <span class="memory-date">Pongal Celebration</span>
+                    <img src="pongal.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">You looked so so sooo good in that saree aniki with the choker, earrings etc everything sahjdbkjawbd 😩, dont mind the hand on the shoulder adhu edho unarchi vasam patuu paniten 🤣 </p>
+                </div>
+
+                <!-- SLOT 3 -->
+                <div class="memory-card">
+                    <span class="memory-date">February Date after Valentines</span>
+                    <img src="feb_date.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">I remember how you came to meet me after going for that dance programme, that day was so chill yk just cafe poitu then a slow walk on the side of the road and some ice cream, I reallyyyy loved it</p>
+                </div>
+
+                <!-- SLOT 4 -->
+                <div class="memory-card">
+                    <span class="memory-date">Your Birthday Lunch</span>
+                    <img src="august_lunch.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">we only met like for 2 hours but it was worth it, had a good lunch aniki briyani superrr but lesson learned. inimel oru briyani dha vanganum 🤣 and ofc how can i miss the nose ring pure vadakki maari irundhe but that silver doesntt suit you nu solre so next time gold vaangi tharen maybe youll love it 🤣</p>
+                </div>
+
+                <!-- SLOT 5 -->
+                <div class="memory-card">
+                    <span class="memory-date">My Birthday ku munadi</span>
+                    <img src="sep_22.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">Thanks for the birthday gift ,i actually read the note anikeee and couldnt wait. i was crying while going back home bike la, purely aanandha kaneer note padicha odaney, thanks nijama loved it ❤️ </p>
+                </div>
+
+                <!-- SLOT 6 -->
+                <div class="memory-card">
+                    <span class="memory-date">November date uh</span>
+                    <img src="nov_date.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">You were so on vibe aniki i really loved the whole day, nalla jollya irunchuuu. we went on an actual date after a longgg time like actual date date</p>
+                </div>
+
+                <!-- SLOT 7 -->
+                <div class="memory-card">
+                    <span class="memory-date">Ibacoooo</span>
+                    <img src="ibacoo.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">it wass almost perfect chayyy my loosu memory naala i missed my bag aniki or else naan unna drop pani irupen lol that bubble gum falvor ice cream thooo really good bruh</p>
+                </div>
+
+                <!-- SLOT 8 -->
+                <div class="memory-card">
+                    <span class="memory-date">Chaapssss</span>
+                    <img src="latest_date.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">Malai chaaps vere level aniki supera irunch uwe should do it more and finally konjo neram kadachidu nee mooj mudna odaney takkunu kai potu pic eduthuten 🤣</p>
+                </div>
+
+                <!-- SLOT 9 -->
+                <div class="memory-card">
+                    <span class="memory-date">Cute <3</span>
+                    <img src="cute.jpg" alt="Pic" class="memory-img">
+                    <p class="memory-caption">andd finallyyy a really cute pic of yours probably my favourite 🥰(you were really tryna guide me to take a good pic of yours which i failed successfulyy 🤣)</p>
+                </div>
+
+            </section>
+
+            <!-- THE CLOSING -->
+            <section class="ask-section fade-in-section">
+                <h3>Labels don't define us.<br>We define us.</h3>
+                <br>
+                <button class="btn-yes" id="yesBtn">I Love Us Fr ❤️</button>
+            </section>
+
+        </div> <!-- End Content -->
+    </div> <!-- End Container -->
+
+    <!-- SUCCESS MODAL -->
+    <div id="confetti-modal">
+        <h2>Happy Valentine's Day ❤️</h2>
+        <p style="font-size: 1.2rem; padding: 20px;">I'm so luckyyyyy to have you in my life, exactly as we are.</p>
+        <p style="margin-top: 20px; font-size: 1.2rem;">(POOO ANDHA PERFUME HA TRY PANUUU)</p>
+    </div>
+
+        <!-- JAVASCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. SELECT ELEMENTS ---
+            var openBtn = document.getElementById('openBtn');
+            var yesBtn = document.getElementById('yesBtn');
+            var lockScreen = document.getElementById('lock-screen');
+            var mainContent = document.getElementById('main-content');
+            var confettiModal = document.getElementById('confetti-modal');
+            
+            // Music elements
+            var musicPlayer = document.getElementById('music-player');
+            var bgMusic = document.getElementById('bg-music');
+            var playBtn = document.getElementById('play-btn');
+            var pauseBtn = document.getElementById('pause-btn');
+
+            // --- 2. OPEN LETTER FUNCTION ---
+            openBtn.addEventListener('click', function() {
+                // Fade out lock screen
+                lockScreen.style.opacity = '0';
+                
+                setTimeout(function() {
+                    lockScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    // Show music player
+                    setTimeout(function() {
+                        musicPlayer.style.display = 'flex';
+                        // Small trick to trigger the fade-in transition
+                        void musicPlayer.offsetWidth; 
+                        musicPlayer.classList.add('active');
+                    }, 500);
+                }, 1000);
+            });
+
+            // --- 3. MUSIC CONTROLS ---
+            playBtn.addEventListener('click', function() {
+                // Attempt to play audio
+                bgMusic.play().then(() => {
+                    console.log("Music playing");
+                }).catch(error => {
+                    console.log("Audio play failed (check file name): ", error);
+                    alert("Could not find song.mp3! Make sure the file is in the same folder.");
+                });
+            });
+
+            pauseBtn.addEventListener('click', function() {
+                bgMusic.pause();
+            });
+
+            // --- 4. SCROLL ANIMATION (FADE IN) ---
+            // This makes photos appear as she scrolls
+            var observerOptions = {
+                threshold: 0.15 // Trigger when 15% of the item is visible
+            };
+
+            var observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Add the 'visible' class which has the CSS transition
+                        entry.target.classList.add('visible');
+                        if(entry.target.classList.contains('fade-in-section')){
+                            entry.target.classList.add('is-visible');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Attach observer to all cards
+            document.querySelectorAll('.memory-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Attach observer to hero and letter
+            document.querySelectorAll('.fade-in-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // --- 5. CONFETTI & HEART EXPLOSION ---
+            yesBtn.addEventListener('click', function() {
+                // Show the modal first
+                confettiModal.style.display = 'flex';
+                
+                // Run the animation functions
+                createConfetti();
+                createHeartExplosion();
+            });
+
+            function createConfetti() {
+                // Creates falling vintage paper
+                for (let i = 0; i < 40; i++) {
+                    createFallingParticle('💌');
+                    createFallingParticle('📜');
+                }
+            }
+
+            function createHeartExplosion() {
+                // Creates hearts shooting out from center
+                for (let i = 0; i < 25; i++) {
+                    createExplodingParticle('❤️');
+                }
+            }
+
+            function createFallingParticle(emoji) {
+                var particle = document.createElement('div');
+                particle.innerText = emoji;
+                particle.style.position = 'fixed';
+                particle.style.left = Math.random() * 100 + 'vw'; // Random horizontal start
+                particle.style.top = '-10vh'; // Start above screen
+                particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                particle.style.zIndex = 2001;
+                particle.style.opacity = Math.random();
+                particle.style.transition = 'top 4s ease-in, opacity 4s';
+                
+                document.body.appendChild(particle);
+
+                // Animate falling down
+                setTimeout(function() {
+                    particle.style.top = '110vh';
+                    particle.style.opacity = '0';
+                }, 100);
+
+                // Remove from DOM after animation
+                setTimeout(function() {
+                    particle.remove();
+                }, 4100);
+            }
+
+            function createExplodingParticle(emoji) {
+                var particle = document.createElement('div');
+                particle.innerText = emoji;
+                particle.style.position = 'fixed';
+                particle.style.left = '50%'; // Start center
+                particle.style.top = '50%';  // Start center
+                particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                particle.style.zIndex = 2002;
+                particle.style.transition = 'all 1.5s cubic-bezier(0, .9, .57, 1)'; // 'explode' effect
+                
+                document.body.appendChild(particle);
+
+                // Calculate random direction
+                var angle = Math.random() * Math.PI * 2;
+                var velocity = Math.random() * 80 + 30; // How far it shoots
+                var tx = Math.cos(angle) * velocity + 'vw';
+                var ty = Math.sin(angle) * velocity + 'vh';
+
+                // Trigger animation
+                requestAnimationFrame(function() {
+                    particle.style.transform = 'translate(' + tx + ', ' + ty + ') rotate(' + (Math.random() * 720) + 'deg)';
+                    particle.style.opacity = '0';
+                });
+
+                // Remove from DOM
+                setTimeout(function() {
+                    particle.remove();
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
