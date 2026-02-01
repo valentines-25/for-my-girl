@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For You ❤️</title>
-    <!-- Importing a vintage typewriter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLES --- */
-        
         :root {
-            --primary-color: #8B4513; /* Saddle Brown for old school look */
-            --bg-color: #fdfbf7;      /* Old paper / off-white color */
-            --card-bg: #fdfbf7;
-            --ink-color: #2c2c2c;     /* Dark grey ink, not pure black */
+            --primary-brown: #5D4037;
+            --paper-cream: #f4f1ea;
+            --ink-black: #2c241b;
+            --vintage-red: #c75b39;
+            --faded-teal: #5a7c7c;
+            --shadow: rgba(0,0,0,0.15);
         }
 
         * {
@@ -23,277 +22,646 @@
         }
 
         body {
-            font-family: 'Special Elite', cursive; /* The Typewriter Font */
-            background-color: var(--bg-color);
-            color: var(--ink-color);
-            line-height: 1.8;
+            font-family: 'Special Elite', cursive;
+            background-color: var(--paper-cream);
+            color: var(--ink-black);
             overflow-x: hidden;
-            background-image: radial-gradient(#e0e0e0 1px, transparent 1px); /* Subtle texture */
-            background-size: 20px 20px;
-            padding-bottom: 80px; /* Space for music player */
-        }
-
-        /* Container */
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
-            border-left: 1px solid #e0e0e0;
-            border-right: 1px solid #e0e0e0;
             position: relative;
         }
 
-        /* --- LOCK SCREEN --- */
+        /* Film Grain & Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* Light Leak Effect */
+        .light-leak {
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,200,100,0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            mix-blend-mode: overlay;
+            animation: leakMove 20s ease-in-out infinite;
+        }
+
+        @keyframes leakMove {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            50% { transform: rotate(5deg) translateX(-20px); }
+        }
+
+        /* Vignette */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(60,40,30,0.4) 100%);
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Lock Screen - Wax Seal Edition */
         #lock-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #3e2723; /* Dark vintage brown */
+            background: 
+                linear-gradient(135deg, #2c1810 0%, #3e2723 50%, #2c1810 100%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 2px, transparent 2px, transparent 4px);
             z-index: 1000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
-            transition: opacity 1s ease;
+            transition: transform 1.5s cubic-bezier(0.7, 0, 0.3, 1), opacity 1s;
         }
 
-        #lock-screen h1 {
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #d4c5b5;
+            border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .envelope-container:hover {
+            transform: translateY(-10px) rotateX(10deg);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: #c9b8a5;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            transform-origin: top;
+            transition: transform 0.6s;
+            z-index: 2;
+        }
+
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #c75b39, #8b3a1f);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 2rem;
-            margin-bottom: 20px;
-            color: #fdfbf7;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: 2px solid #fdfbf7;
-            padding: 15px;
+            z-index: 3;
+            transition: all 0.3s;
+            border: 3px solid rgba(0,0,0,0.1);
+        }
+
+        .wax-seal::before {
+            content: "❤️";
+            filter: grayscale(0.3);
+        }
+
+        .wax-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .wax-seal.broken {
+            animation: sealBreak 0.6s forwards;
+        }
+
+        @keyframes sealBreak {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(0) rotate(45deg); opacity: 0; }
         }
 
         .envelope-btn {
+            margin-top: 30px;
             background: transparent;
-            color: #fdfbf7;
-            border: 2px solid #fdfbf7;
-            padding: 12px 35px;
+            color: #d4c5b5;
+            border: 2px solid #d4c5b5;
+            padding: 15px 40px;
             font-family: 'Special Elite', cursive;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .envelope-btn:hover {
-            background: #fdfbf7;
-            color: #3e2723;
+        .envelope-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(212,197,181,0.2);
+            transition: left 0.3s;
         }
 
-        /* --- MAIN CONTENT --- */
+        .envelope-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Container & Content */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--paper-cream);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
         .content {
             display: none;
-            padding-bottom: 80px;
-        }
-
-        /* --- SCROLL ANIMATIONS --- */
-        .fade-in-section {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            will-change: opacity, visibility;
+            animation: fadeIn 2s forwards;
+            padding-bottom: 100px;
         }
 
-        .fade-in-section.is-visible {
-            opacity: 1;
-            transform: none;
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
-        /* --- HERO --- */
+        /* Hero Section */
         .hero {
             text-align: center;
-            padding: 60px 20px 40px;
-            border-bottom: 1px dashed #ccc;
+            padding: 80px 20px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(199,91,57,0.03) 10px,
+                rgba(199,91,57,0.03) 20px
+            );
+            animation: bgScroll 30s linear infinite;
+        }
+
+        @keyframes bgScroll {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(50px,50px); }
         }
 
         .hero h2 {
-            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 4px;
+            color: var(--primary-brown);
+            position: relative;
+            display: inline-block;
         }
 
-        .hero .date {
+        .hero h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--vintage-red), transparent);
+        }
+
+        .date-stamp {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 20px;
+            border: 2px solid var(--vintage-red);
+            color: var(--vintage-red);
             font-size: 0.9rem;
-            color: #666;
-            font-style: italic;
+            transform: rotate(-2deg);
+            opacity: 0.8;
+            font-family: 'Special Elite', cursive;
         }
 
-        /* --- LETTER SECTION --- */
+        /* Letter Section - Typewriter Effect */
         .letter-section {
-            padding: 40px 30px;
-            text-align: left;
+            padding: 50px 40px;
+            position: relative;
+            background: 
+                linear-gradient(to bottom, transparent 95%, rgba(0,0,0,0.03) 95%),
+                linear-gradient(to right, transparent 95%, rgba(0,0,0,0.03) 95%);
+            background-size: 100% 2rem, 2rem 100%;
+            line-height: 2;
         }
 
         .letter-text {
             font-size: 1.1rem;
-            margin-bottom: 25px;
             white-space: pre-line;
+            position: relative;
+        }
+
+        .typewriter-line {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: typeIn 0.8s forwards;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes typeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .handwritten {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            color: var(--vintage-red);
+            transform: rotate(-1deg);
+            display: inline-block;
+            margin: 10px 0;
         }
 
         .signature {
             text-align: right;
-            font-style: italic;
-            font-size: 1.2rem;
-            margin-top: 20px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-brown);
+            margin-top: 40px;
+            transform: rotate(-2deg);
         }
 
-        /* --- TIMELINE (THE SCRAPBOOK) --- */
+        /* Coffee Stain Decoration */
+        .coffee-stain {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 3px solid rgba(139, 90, 43, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        .coffee-stain.one {
+            top: 10%;
+            right: -20px;
+            transform: scale(0.8);
+        }
+
+        .coffee-stain.two {
+            bottom: 20%;
+            left: -30px;
+            transform: scale(1.2) rotate(30deg);
+        }
+
+        /* Timeline - Scrapbook Style */
         .timeline {
             position: relative;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
-        /* The vertical line (Thread) */
-        .timeline::before {
-            content: '';
+        .timeline-thread {
             position: absolute;
             left: 50%;
             top: 0;
             bottom: 0;
-            width: 2px;
-            border-left: 2px dashed #aaa; /* Dashed line like thread */
+            width: 3px;
+            background: 
+                repeating-linear-gradient(
+                    to bottom,
+                    var(--primary-brown),
+                    var(--primary-brown) 10px,
+                    transparent 10px,
+                    transparent 15px
+                );
             transform: translateX(-50%);
+            opacity: 0.4;
         }
 
         .memory-card {
             background: white;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 40px;
+            padding: 15px 15px 40px 15px;
+            margin-bottom: 50px;
             position: relative;
             width: 85%;
-            margin-left: 15%; 
-            text-align: left;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-            transform: rotate(-1deg) translateY(30px); /* Initial state for transition */
+            margin-left: 10%;
+            box-shadow: 
+                0 4px 6px rgba(0,0,0,0.1),
+                0 1px 3px rgba(0,0,0,0.08);
+            transform: rotate(-2deg) translateY(50px);
             opacity: 0;
-            transition: transform 0.8s ease-out, opacity 0.8s ease-out, filter 0.3s;
-        }
-        
-        .memory-card.visible {
-            opacity: 1;
-            transform: rotate(-1deg) translateY(0);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
         }
 
-        /* Tilt alternate cards the other way */
+        .memory-card.visible {
+            opacity: 1;
+            transform: rotate(-2deg) translateY(0);
+        }
+
         .memory-card:nth-child(even) {
-            margin-left: 0;
-            margin-right: 15%;
-            text-align: right;
-            transform: rotate(1deg) translateY(30px);
+            margin-left: 5%;
+            margin-right: 10%;
+            transform: rotate(2deg) translateY(50px);
         }
 
         .memory-card:nth-child(even).visible {
-            transform: rotate(1deg) translateY(0);
+            transform: rotate(2deg) translateY(0);
         }
-        
-        /* Tape effect */
+
+        /* Washi Tape Effect */
         .memory-card::before {
-            content: '';
+            content: "";
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 15px;
-            background-color: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(0,0,0,0.1);
+            transform: translateX(-50%) rotate(-1deg);
+            width: 50px;
+            height: 20px;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.6),
+                    rgba(255,255,255,0.6) 5px,
+                    rgba(0,0,0,0.05) 5px,
+                    rgba(0,0,0,0.05) 10px
+                );
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        /* Pin on the timeline */
-        .memory-card::after {
-            content: '';
-            position: absolute;
-            left: -34px; 
-            top: 20px;
-            width: 12px;
-            height: 12px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px var(--primary-color);
-        }
+        .memory-card:nth-child(2)::before { background: rgba(199,91,57,0.3); transform: translateX(-50%) rotate(2deg); }
+        .memory-card:nth-child(3)::before { background: rgba(90,124,124,0.3); }
+        .memory-card:nth-child(4)::before { background: rgba(212,197,181,0.6); transform: translateX(-50%) rotate(-2deg); }
 
-        .memory-card:nth-child(even)::after {
-            left: auto;
-            right: -34px;
+        /* Polaroid Photo */
+        .photo-frame {
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
 
         .memory-img {
             width: 100%;
             height: auto;
-            border: 4px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-            filter: sepia(30%) contrast(1.1); /* Vintage filter */
-            transition: filter 0.3s;
+            display: block;
+            filter: sepia(60%) contrast(1.1) brightness(0.9) blur(0.5px);
+            transition: all 0.8s ease;
+            transform: scale(1.05);
         }
 
         .memory-card:hover .memory-img {
-            filter: sepia(0%) contrast(1); /* Returns to color on hover */
+            filter: sepia(0%) contrast(1) brightness(1) blur(0);
+            transform: scale(1);
+        }
+
+        .memory-card.developed .memory-img {
+            filter: sepia(0%) contrast(1) brightness(1) blur(0);
+        }
+
+        /* Developing Animation */
+        @keyframes develop {
+            0% { filter: sepia(80%) contrast(1.2) brightness(0.8) blur(2px); }
+            100% { filter: sepia(0%) contrast(1) brightness(1) blur(0); }
         }
 
         .memory-date {
-            font-weight: bold;
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            display: block;
-            margin-bottom: 5px;
+            font-family: 'Special Elite', cursive;
+            font-size: 0.85rem;
+            color: var(--vintage-red);
             text-transform: uppercase;
-            border-bottom: 1px solid #eee;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            display: block;
+            border-bottom: 1px dashed #ccc;
             padding-bottom: 5px;
         }
 
         .memory-caption {
-            font-size: 0.95rem;
-            color: #555;
-            font-style: italic;
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            color: var(--ink-black);
+            line-height: 1.4;
+            opacity: 0.9;
         }
 
-        /* --- THE CLOSING --- */
+        /* Pin Effect */
+        .memory-card::after {
+            content: "📍";
+            position: absolute;
+            top: -5px;
+            right: 20px;
+            font-size: 1.5rem;
+            transform: rotate(15deg);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+            z-index: 10;
+        }
+
+        .memory-card:nth-child(even)::after {
+            left: 20px;
+            right: auto;
+            transform: rotate(-15deg);
+        }
+
+        /* Ask Section */
         .ask-section {
             text-align: center;
-            padding: 60px 20px;
-            background-color: #f4e1d2; /* Retro pinkish/brown */
-            border-top: 4px double var(--primary-color);
+            padding: 80px 20px;
+            background: 
+                radial-gradient(ellipse at center, rgba(199,91,57,0.1) 0%, transparent 70%),
+                var(--paper-cream);
+            position: relative;
+            border-top: 3px double var(--primary-brown);
         }
 
         .ask-section h3 {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            line-height: 1.4;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            line-height: 1.5;
+            color: var(--primary-brown);
         }
 
         .btn-yes {
-            background: var(--primary-color);
+            background: var(--vintage-red);
             color: white;
             font-family: 'Special Elite', cursive;
-            font-size: 1.2rem;
-            padding: 15px 40px;
+            font-size: 1.3rem;
+            padding: 20px 50px;
             border: none;
             cursor: pointer;
-            box-shadow: 3px 3px 0px #5d2e0b;
-            transition: transform 0.1s;
+            box-shadow: 
+                0 4px 0 #8b3a1f,
+                0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 2px;
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 0 #8b3a1f,
+                0 15px 30px rgba(0,0,0,0.25);
         }
 
         .btn-yes:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #5d2e0b;
+            transform: translateY(4px);
+            box-shadow: 
+                0 0 0 #8b3a1f,
+                0 5px 10px rgba(0,0,0,0.2);
         }
 
-        /* --- SUCCESS MODAL --- */
+        /* Vinyl Music Player */
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(46, 32, 22, 0.95);
+            padding: 15px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 998;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 3px solid #d4c5b5;
+        }
+
+        #music-player.expanded {
+            width: 300px;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .vinyl {
+            width: 60px;
+            height: 60px;
+            background: 
+                radial-gradient(circle at 30% 30%, #333 0%, #000 40%, #111 100%),
+                repeating-radial-gradient(circle at center, #222 0px, #222 2px, #000 2px, #000 4px);
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            animation: spin 3s linear infinite paused;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .vinyl.playing {
+            animation-play-state: running;
+        }
+
+        .vinyl::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: var(--vintage-red);
+            border-radius: 50%;
+            border: 3px solid #d4c5b5;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-controls {
+            display: none;
+            margin-left: 15px;
+            color: white;
+            flex: 1;
+        }
+
+        #music-player.expanded .music-controls {
+            display: block;
+        }
+
+        #music-player.expanded .vinyl {
+            width: 50px;
+            height: 50px;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 0.8rem;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: white;
+        }
+
+        .song-title {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Modal */
         #confetti-modal {
             display: none;
             position: fixed;
@@ -301,371 +669,408 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #fdfbf7;
+            background: rgba(244, 241, 234, 0.98);
             z-index: 2000;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-        }
-
-        #confetti-modal h2 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-
-        /* --- MUSIC PLAYER --- */
-        #music-player {
-            display: none; /* Hidden initially */
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #3e2723;
-            color: white;
-            padding: 10px 20px;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-            font-family: 'Special Elite', cursive;
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 0.5s;
         }
-        
-        #music-player.active {
+
+        #confetti-modal.show {
             opacity: 1;
         }
 
-        .music-controls button {
-            background: transparent;
-            border: 1px solid #fdfbf7;
-            color: #fdfbf7;
-            padding: 5px 15px;
-            cursor: pointer;
-            font-family: 'Special Elite', cursive;
-            border-radius: 4px;
-        }
-        
-        .music-controls button:hover {
-            background: #fdfbf7;
-            color: #3e2723;
+        #confetti-modal h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--vintage-red);
+            margin-bottom: 20px;
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
 
-        .music-text {
-            font-size: 0.9rem;
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
-        /* Animations */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero h2 { font-size: 1.8rem; }
+            .letter-section { padding: 30px 25px; }
+            .memory-card { width: 90%; margin-left: 5% !important; margin-right: 5% !important; }
+            .timeline-thread { left: 20px; }
+            .memory-card::after { display: none; }
+            #music-player { bottom: 10px; right: 10px; }
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        /* Floating Animation for decorative elements */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
         }
 
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- AUDIO ELEMENT -->
-    <!-- Replace 'song.mp3' with your actual file name -->
+    <div class="light-leak"></div>
     <audio id="bg-music" loop>
         <source src="song.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
-    <!-- MUSIC PLAYER BAR -->
-    <div id="music-player">
-        <div class="music-text">🎵 Peak Song🎵</div>
-        <div class="music-controls">
-            <button id="play-btn">Play</button>
-            <button id="pause-btn">Pause</button>
-        </div>
-    </div>
-
-    <!-- LOCK SCREEN -->
+    <!-- Lock Screen -->
     <div id="lock-screen">
-        <h1>VAA DIII LOOOOO</h1>
-        <p style="margin-bottom: 30px; color: #ccc;">A letter for you...</p>
-        <button class="envelope-btn" id="openBtn">Open Pannu</button>
+        <div class="envelope-container" id="envelope">
+            <div class="envelope-flap"></div>
+            <div class="wax-seal" id="waxSeal"></div>
+        </div>
+        <button class="envelope-btn" id="openBtn" style="margin-top: 40px;">Break the Seal</button>
+        <p style="margin-top: 20px; color: #8b7355; font-size: 0.9rem; font-style: italic;">A letter from me to you...</p>
     </div>
 
     <div class="container">
-        
-        <!-- MAIN CONTENT -->
         <div class="content" id="main-content">
             
-            <!-- HERO -->
-            <section class="hero fade-in-section">
-                <h2>Our Story So Far...</h2>
-                <p class="date">Valentine's Day, 2026</p>
+            <section class="hero">
+                <h2>Our Story</h2>
+                <div class="date-stamp">FEB 14, 2026</div>
             </section>
 
-            <!-- LETTER TEXT -->
-            <section class="letter-section fade-in-section">
-                <p class="letter-text">
-                    Dear Madam ji,
-                    <br><br>
-                    Unaku gifts vaangi thandhuten (the perfume, the jewelry...), but adhellam naan enna solanumo express pananadhuuuu 
-                    <br><br>
-                    I know We haven't put a label on "us" yet. And I realized recently that we don't really need to. The way we laugh, the way we fight, the way we just exist together... we already act exactly how a real couple should.
-                    <br><br>
-                    So namma enna nu define panrathuku badhila, I just wanted to document this. To remind you that even without the title, you are my person.
-                    <br><br>
-                    Here are some of my favorite moments with you btw press play on the song before seeing the pics 🤣
-                </p>
-                <p class="signature">- Me</p>
-            </section>
-
-            <!-- TIMELINE (9 SLOTS) -->
-            <section class="timeline">
+            <section class="letter-section">
+                <div class="coffee-stain one"></div>
+                <div class="coffee-stain two"></div>
                 
-                <!-- SLOT 1 -->
-                <div class="memory-card">
+                <div id="letterContent"></div>
+                
+                <p class="signature">- Yours</p>
+            </section>
+
+            <section class="timeline">
+                <div class="timeline-thread"></div>
+                
+                <div class="memory-card" data-delay="0">
                     <span class="memory-date">First Photo Together</span>
-                    <img src="first_meet.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">I was so nervous and excited that day on diwali celebration and I really really wanted to take a picture together, kadaisi ha i ended up mustering up the courage to ask you for a selfie</p>
+                    <div class="photo-frame">
+                        <img src="first_meet.jpg" alt="First Meet" class="memory-img">
+                    </div>
+                    <p class="memory-caption">Diwali celebration aniki i was so nervous but so determined to get that selfie!</p>
                 </div>
 
-                <!-- SLOT 2 -->
-                <div class="memory-card">
+                <div class="memory-card" data-delay="200">
                     <span class="memory-date">Pongal Celebration</span>
-                    <img src="pongal.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">You looked so so sooo good in that saree aniki with the choker, earrings etc everything sahjdbkjawbd 😩, dont mind the hand on the shoulder adhu edho unarchi vasam patuu paniten 🤣 </p>
+                    <div class="photo-frame">
+                        <img src="pongal.jpg" alt="Pongal" class="memory-img">
+                    </div>
+                    <p class="memory-caption">You looked stunning in that saree... that choker, those earrings! 😩 <span class="handwritten">(Don't mind the hand on shoulder!)</span></p>
                 </div>
 
-                <!-- SLOT 3 -->
-                <div class="memory-card">
-                    <span class="memory-date">February Date after Valentines</span>
-                    <img src="feb_date.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">I remember how you came to meet me after going for that dance programme, that day was so chill yk just cafe poitu then a slow walk on the side of the road and some ice cream, I reallyyyy loved it</p>
+                <div class="memory-card" data-delay="400">
+                    <span class="memory-date">February Date</span>
+                    <div class="photo-frame">
+                        <img src="feb_date.jpg" alt="February" class="memory-img">
+                    </div>
+                    <p class="memory-caption">After that dance program nee vandhe, apdiye cafe, slow walk, ice cream. Perfect.</p>
                 </div>
 
-                <!-- SLOT 4 -->
-                <div class="memory-card">
-                    <span class="memory-date">Your Birthday Lunch</span>
-                    <img src="august_lunch.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">we only met like for 2 hours but it was worth it, had a good lunch aniki briyani superrr but lesson learned. inimel oru briyani dha vanganum 🤣 and ofc how can i miss the nose ring pure vadakki maari irundhe but that silver doesntt suit you nu solre so next time gold vaangi tharen maybe youll love it 🤣</p>
+                <div class="memory-card" data-delay="600">
+                    <span class="memory-date">Birthday Lunch</span>
+                    <div class="photo-frame">
+                        <img src="august_lunch.jpg" alt="Lunch" class="memory-img">
+                    </div>
+                    <p class="memory-caption">Two hours of biryani and your nose pin from me <span class="handwritten">(gold suits you better, next time! 😉)</span></p>
                 </div>
 
-                <!-- SLOT 5 -->
-                <div class="memory-card">
-                    <span class="memory-date">My Birthday ku munadi</span>
-                    <img src="sep_22.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">Thanks for the birthday gift ,i actually read the note anikeee and couldnt wait. i was crying while going back home bike la, purely aanandha kaneer note padicha odaney, thanks nijama loved it ❤️ </p>
+                <div class="memory-card" data-delay="800">
+                    <span class="memory-date">Pre-Birthday Gift</span>
+                    <div class="photo-frame">
+                        <img src="sep_22.jpg" alt="Gift" class="memory-img">
+                    </div>
+                    <p class="memory-caption">cried while riding home after reading your note... <span class="handwritten">happy tears only ❤️</span></p>
                 </div>
 
-                <!-- SLOT 6 -->
-                <div class="memory-card">
-                    <span class="memory-date">November date uh</span>
-                    <img src="nov_date.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">You were so on vibe aniki i really loved the whole day, nalla jollya irunchuuu. we went on an actual date after a longgg time like actual date date</p>
+                <div class="memory-card" data-delay="1000">
+                    <span class="memory-date">November Vibes</span>
+                    <div class="photo-frame">
+                        <img src="nov_date.jpg" alt="November" class="memory-img">
+                    </div>
+                    <p class="memory-caption">You were so on vibe that day! A real date after so long.</p>
                 </div>
 
-                <!-- SLOT 7 -->
-                <div class="memory-card">
-                    <span class="memory-date">Ibacoooo</span>
-                    <img src="ibacoo.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">it wass almost perfect chayyy my loosu memory naala i missed my bag aniki or else naan unna drop pani irupen lol that bubble gum falvor ice cream thooo really good bruh</p>
+                <div class="memory-card" data-delay="1200">
+                    <span class="memory-date">Ibacooo</span>
+                    <div class="photo-frame">
+                        <img src="ibacoo.jpg" alt="Ibacoo" class="memory-img">
+                    </div>
+                    <p class="memory-caption">Almost perfect if not for my bad memoru and i hadnt lost the bag! <span class="handwritten">That bubble gum ice cream though...</span></p>
                 </div>
 
-                <!-- SLOT 8 -->
-                <div class="memory-card">
+                <div class="memory-card" data-delay="1400">
                     <span class="memory-date">Chaapssss</span>
-                    <img src="latest_date.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">Malai chaaps vere level aniki supera irunch uwe should do it more and finally konjo neram kadachidu nee mooj mudna odaney takkunu kai potu pic eduthuten 🤣</p>
+                    <div class="photo-frame">
+                        <img src="latest_date.jpg" alt="Chaaps" class="memory-img">
+                    </div>
+                    <p class="memory-caption">Malai chaaps eh super dhaan bha! And yes, I took the pic immediately, chance kadacha odaney 🤣</p>
                 </div>
 
-                <!-- SLOT 9 -->
-                <div class="memory-card">
-                    <span class="memory-date">Cute <3</span>
-                    <img src="cute.jpg" alt="Pic" class="memory-img">
-                    <p class="memory-caption">andd finallyyy a really cute pic of yours probably my favourite 🥰(you were really tryna guide me to take a good pic of yours which i failed successfulyy 🤣)</p>
+                <div class="memory-card" data-delay="1600">
+                    <span class="memory-date">My Favorite</span>
+                    <div class="photo-frame">
+                        <img src="cute.jpg" alt="Cute" class="memory-img">
+                    </div>
+                    <p class="memory-caption">The cutest photooo, despite my failed photography skills! 🥰</p>
                 </div>
-
             </section>
 
-            <!-- THE CLOSING -->
-            <section class="ask-section fade-in-section">
+            <section class="ask-section">
                 <h3>Labels don't define us.<br>We define us.</h3>
-                <br>
-                <button class="btn-yes" id="yesBtn">I Love Us Fr ❤️</button>
+                <button class="btn-yes" id="yesBtn">I Love Us ❤️</button>
             </section>
-
-        </div> <!-- End Content -->
-    </div> <!-- End Container -->
-
-    <!-- SUCCESS MODAL -->
-    <div id="confetti-modal">
-        <h2>Happy Valentine's Day ❤️</h2>
-        <p style="font-size: 1.2rem; padding: 20px;">I'm so luckyyyyy to have you in my life, exactly as we are.</p>
-        <p style="margin-top: 20px; font-size: 1.2rem;">(POOO ANDHA PERFUME HA TRY PANUUU)</p>
+        </div>
     </div>
 
-        <!-- JAVASCRIPT -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- 1. SELECT ELEMENTS ---
-            var openBtn = document.getElementById('openBtn');
-            var yesBtn = document.getElementById('yesBtn');
-            var lockScreen = document.getElementById('lock-screen');
-            var mainContent = document.getElementById('main-content');
-            var confettiModal = document.getElementById('confetti-modal');
-            
-            // Music elements
-            var musicPlayer = document.getElementById('music-player');
-            var bgMusic = document.getElementById('bg-music');
-            var playBtn = document.getElementById('play-btn');
-            var pauseBtn = document.getElementById('pause-btn');
+    <!-- Vinyl Player -->
+    <div id="music-player">
+        <div class="vinyl" id="vinyl"></div>
+        <div class="music-controls">
+            <div class="song-title">🎵 Peak Song</div>
+            <button class="control-btn" id="playBtn">Play</button>
+            <button class="control-btn" id="pauseBtn">Pause</button>
+        </div>
+    </div>
 
-            // --- 2. OPEN LETTER FUNCTION ---
-            openBtn.addEventListener('click', function() {
-                // Fade out lock screen
+    <!-- Success Modal -->
+    <div id="confetti-modal">
+        <h2>Happy Valentine's Day</h2>
+        <p style="font-size: 1.3rem; font-family: 'Caveat', cursive; margin: 20px;">I'm so lucky to have you in my life, exactly as we are.</p>
+        <p style="margin-top: 30px; padding: 15px; border: 2px dashed var(--vintage-red); display: inline-block; transform: rotate(-2deg);">
+            (GO TRY THAT PERFUME NOW!)
+        </p>
+    </div>
+
+    <script>
+        // Letter content with typewriter effect
+        const letterContent = `Dear Harini Raooo,
+
+Unaku gifts vaangi thandhachuu (the perfume, the jewelry...), but adhellam naan enna solanumo express pannadhuuuu
+
+I know we haven't put a label on "us" yet. And I realized recently that we don't really need to. The way we laugh, the way we fight, the way we just exist together... we already act exactly how a real couple should.
+
+So namma enna nu define panrathuku badhila, I just wanted to document this. To remind you that even without the title, you are my person.
+
+Here are some of my favorite moments with yo, btw press play on the song (bottom right la irukum paaru disc maari) before seeing the pics! 🤣`;
+
+        // Typewriter Effect
+        const letterContainer = document.getElementById('letterContent');
+        const lines = letterContent.split('\n\n');
+        
+        function renderLetter() {
+            letterContainer.innerHTML = '';
+            lines.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'typewriter-line';
+                div.style.animationDelay = `${index * 0.5}s`;
+                div.textContent = line;
+                if (index === 0) div.style.fontWeight = 'bold';
+                letterContainer.appendChild(div);
+            });
+        }
+
+        // Lock Screen Interaction
+        const openBtn = document.getElementById('openBtn');
+        const waxSeal = document.getElementById('waxSeal');
+        const envelope = document.getElementById('envelope');
+        const lockScreen = document.getElementById('lock-screen');
+        const mainContent = document.getElementById('main-content');
+        const musicPlayer = document.getElementById('music-player');
+
+        openBtn.addEventListener('click', openLetter);
+        waxSeal.addEventListener('click', openLetter);
+
+        function openLetter() {
+            waxSeal.classList.add('broken');
+            envelope.classList.add('open');
+            
+            setTimeout(() => {
                 lockScreen.style.opacity = '0';
-                
-                setTimeout(function() {
+                setTimeout(() => {
                     lockScreen.style.display = 'none';
                     mainContent.style.display = 'block';
+                    renderLetter();
+                    initObserver();
                     
-                    // Show music player
-                    setTimeout(function() {
-                        musicPlayer.style.display = 'flex';
-                        // Small trick to trigger the fade-in transition
-                        void musicPlayer.offsetWidth; 
-                        musicPlayer.classList.add('active');
-                    }, 500);
+                    // Auto-expand music player briefly to hint at it
+                    setTimeout(() => {
+                        musicPlayer.classList.add('expanded');
+                        setTimeout(() => {
+                            musicPlayer.classList.remove('expanded');
+                        }, 2000);
+                    }, 1000);
                 }, 1000);
-            });
+            }, 600);
+        }
 
-            // --- 3. MUSIC CONTROLS ---
-            playBtn.addEventListener('click', function() {
-                // Attempt to play audio
-                bgMusic.play().then(() => {
-                    console.log("Music playing");
-                }).catch(error => {
-                    console.log("Audio play failed (check file name): ", error);
-                    alert("Could not find song.mp3! Make sure the file is in the same folder.");
-                });
-            });
+        // Vinyl Music Player
+        const vinyl = document.getElementById('vinyl');
+        const bgMusic = document.getElementById('bg-music');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
 
-            pauseBtn.addEventListener('click', function() {
-                bgMusic.pause();
-            });
+        vinyl.addEventListener('click', () => {
+            musicPlayer.classList.toggle('expanded');
+        });
 
-            // --- 4. SCROLL ANIMATION (FADE IN) ---
-            // This makes photos appear as she scrolls
-            var observerOptions = {
-                threshold: 0.15 // Trigger when 15% of the item is visible
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            bgMusic.play().then(() => {
+                vinyl.classList.add('playing');
+            }).catch(err => {
+                console.log("Audio error:", err);
+                alert("Make sure song.mp3 is in the same folder!");
+            });
+        });
+
+        pauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            bgMusic.pause();
+            vinyl.classList.remove('playing');
+        });
+
+        // Intersection Observer for Scroll Animations
+        function initObserver() {
+            const observerOptions = {
+                threshold: 0.2,
+                rootMargin: "0px 0px -50px 0px"
             };
 
-            var observer = new IntersectionObserver((entries) => {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Add the 'visible' class which has the CSS transition
-                        entry.target.classList.add('visible');
-                        if(entry.target.classList.contains('fade-in-section')){
-                            entry.target.classList.add('is-visible');
-                        }
+                        const delay = entry.target.dataset.delay || 0;
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                            // Gradually develop photos as they come into view
+                            setTimeout(() => {
+                                entry.target.classList.add('developed');
+                            }, 500);
+                        }, delay);
                     }
                 });
             }, observerOptions);
 
-            // Attach observer to all cards
             document.querySelectorAll('.memory-card').forEach(card => {
                 observer.observe(card);
             });
-            
-            // Attach observer to hero and letter
-            document.querySelectorAll('.fade-in-section').forEach(section => {
-                observer.observe(section);
-            });
+        }
 
-            // --- 5. CONFETTI & HEART EXPLOSION ---
-            yesBtn.addEventListener('click', function() {
-                // Show the modal first
-                confettiModal.style.display = 'flex';
-                
-                // Run the animation functions
-                createConfetti();
-                createHeartExplosion();
-            });
-
-            function createConfetti() {
-                // Creates falling vintage paper
-                for (let i = 0; i < 40; i++) {
-                    createFallingParticle('💌');
-                    createFallingParticle('📜');
-                }
+        // Parallax Effect for Thread
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.timeline-thread');
+            if (parallax) {
+                parallax.style.transform = `translateX(-50%) translateY(${scrolled * 0.5}px)`;
             }
+        });
 
-            function createHeartExplosion() {
-                // Creates hearts shooting out from center
-                for (let i = 0; i < 25; i++) {
-                    createExplodingParticle('❤️');
-                }
-            }
+        // Success Modal with Confetti
+        const yesBtn = document.getElementById('yesBtn');
+        const modal = document.getElementById('confetti-modal');
 
-            function createFallingParticle(emoji) {
-                var particle = document.createElement('div');
-                particle.innerText = emoji;
-                particle.style.position = 'fixed';
-                particle.style.left = Math.random() * 100 + 'vw'; // Random horizontal start
-                particle.style.top = '-10vh'; // Start above screen
-                particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                particle.style.zIndex = 2001;
-                particle.style.opacity = Math.random();
-                particle.style.transition = 'top 4s ease-in, opacity 4s';
+        yesBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+            createConfetti();
+            createHeartBurst();
+        });
+
+        function createConfetti() {
+            const colors = ['#c75b39', '#5a7c7c', '#d4c5b5', '#8b3a1f'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '3000';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
                 
-                document.body.appendChild(particle);
-
-                // Animate falling down
-                setTimeout(function() {
-                    particle.style.top = '110vh';
-                    particle.style.opacity = '0';
-                }, 100);
-
-                // Remove from DOM after animation
-                setTimeout(function() {
-                    particle.remove();
-                }, 4100);
+                setTimeout(() => confetti.remove(), 5000);
             }
+        }
 
-            function createExplodingParticle(emoji) {
-                var particle = document.createElement('div');
-                particle.innerText = emoji;
-                particle.style.position = 'fixed';
-                particle.style.left = '50%'; // Start center
-                particle.style.top = '50%';  // Start center
-                particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
-                particle.style.zIndex = 2002;
-                particle.style.transition = 'all 1.5s cubic-bezier(0, .9, .57, 1)'; // 'explode' effect
+        function createHeartBurst() {
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'fixed';
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                heart.style.fontSize = '2rem';
+                heart.style.zIndex = '3001';
+                heart.style.pointerEvents = 'none';
                 
-                document.body.appendChild(particle);
-
-                // Calculate random direction
-                var angle = Math.random() * Math.PI * 2;
-                var velocity = Math.random() * 80 + 30; // How far it shoots
-                var tx = Math.cos(angle) * velocity + 'vw';
-                var ty = Math.sin(angle) * velocity + 'vh';
-
-                // Trigger animation
-                requestAnimationFrame(function() {
-                    particle.style.transform = 'translate(' + tx + ', ' + ty + ') rotate(' + (Math.random() * 720) + 'deg)';
-                    particle.style.opacity = '0';
+                const angle = (Math.PI * 2 * i) / 20;
+                const velocity = 200 + Math.random() * 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                heart.style.transition = 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                document.body.appendChild(heart);
+                
+                requestAnimationFrame(() => {
+                    heart.style.transform = `translate(${tx}px, ${ty}px) scale(0)`;
+                    heart.style.opacity = '0';
                 });
-
-                // Remove from DOM
-                setTimeout(function() {
-                    particle.remove();
-                }, 1500);
+                
+                setTimeout(() => heart.remove(), 1500);
             }
+        }
+
+        // Add falling animation style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 3D Tilt Effect for Cards
+        document.querySelectorAll('.memory-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                card.style.zIndex = '100';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                const originalRotate = card.classList.contains('visible') ? 
+                    (card.style.transform.includes('even') ? '2deg' : '-2deg') : '0deg';
+                card.style.transform = `rotate(${originalRotate}) translateY(0)`;
+                card.style.zIndex = '1';
+            });
         });
     </script>
 </body>
